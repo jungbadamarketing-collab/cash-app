@@ -7,11 +7,7 @@
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
     html, body { width: 100%; }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', 'Apple SD Gothic Neo', sans-serif;
-      background: #f2f2f7; color: #1a1a1a;
-      -webkit-text-size-adjust: 100%;
-    }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', 'Apple SD Gothic Neo', sans-serif; background: #f2f2f7; color: #1a1a1a; -webkit-text-size-adjust: 100%; }
     .app { width: 100%; padding: 28px 20px 80px; max-width: 600px; margin: 0 auto; }
 
     .header { padding-bottom: 22px; border-bottom: 2px solid #ddd; margin-bottom: 36px; }
@@ -27,27 +23,31 @@
 
     select { width: 100%; padding: 20px 18px; border: 2px solid #ddd; border-radius: 16px; font-size: 20px; background: #fff; color: #1a1a1a; outline: none; -webkit-appearance: none; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='10' viewBox='0 0 16 10'%3E%3Cpath fill='%23999' d='M8 10L0 0h16z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 20px center; min-height: 68px; }
 
-    .coin-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-    .field { background: #fff; border: 2px solid #e0e0e0; border-radius: 16px; padding: 18px 20px; }
-    .field label { font-size: 15px; color: #aaa; display: block; margin-bottom: 10px; font-weight: 700; }
-    .field input { width: 100%; border: none; background: transparent; font-size: 30px; font-weight: 800; color: #1a1a1a; outline: none; min-height: 44px; -webkit-appearance: none; }
-    .field.auto { border-color: #6ecfa0; background: #edfaf3; }
-    .field.auto label { color: #0a5c32; }
-    .field.auto input { color: #0a5c32; }
-    .prev-info { font-size: 14px; color: #888; margin-top: 12px; padding: 12px 16px; background: #f0f0f0; border-radius: 12px; line-height: 1.6; }
+    /* 동전/지폐 공통 리스트 스타일 */
+    .row-list { display: flex; flex-direction: column; gap: 12px; }
+    .row-item { background: #fff; border: 2px solid #e0e0e0; border-radius: 16px; padding: 20px 22px; display: flex; align-items: center; justify-content: space-between; min-height: 78px; }
+    .row-item.auto { border-color: #6ecfa0; background: #edfaf3; }
+    .row-item label { font-size: 22px; color: #1a1a1a; font-weight: 600; }
+    .row-item.auto label { color: #0a5c32; }
+    .row-item input { width: 130px; border: none; border-bottom: 2px solid #ccc; background: transparent; font-size: 30px; font-weight: 800; text-align: right; outline: none; color: #1a1a1a; padding: 4px 0; -webkit-appearance: none; }
+    .row-item.auto input { color: #0a5c32; border-bottom-color: #6ecfa0; }
+    .row-item.rare { opacity: 0.38; }
+    .row-item.rare:focus-within { opacity: 1; }
 
-    .bill-list { display: flex; flex-direction: column; gap: 12px; }
-    .bill-row { background: #fff; border: 2px solid #e0e0e0; border-radius: 16px; padding: 20px 22px; display: flex; align-items: center; justify-content: space-between; min-height: 78px; }
-    .bill-row label { font-size: 22px; color: #1a1a1a; font-weight: 600; }
-    .bill-row input { width: 130px; border: none; border-bottom: 2px solid #ccc; background: transparent; font-size: 30px; font-weight: 800; text-align: right; outline: none; color: #1a1a1a; padding: 4px 0; -webkit-appearance: none; }
-    .bill-row.rare { opacity: 0.38; }
-    .bill-row.rare:focus-within { opacity: 1; }
     input::placeholder { color: #d0d0d0; font-weight: 400; }
+    .prev-info { font-size: 14px; color: #888; margin-top: 12px; padding: 12px 16px; background: #f0f0f0; border-radius: 12px; line-height: 1.6; }
     .rare-hint { font-size: 14px; color: #bbb; margin-top: 10px; padding-left: 4px; }
 
-    .change-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-    .change-grid .field label { font-size: 14px; }
-    .change-grid .field input { font-size: 26px; }
+    /* 증감/누락 1행 스타일 */
+    .change-list { display: flex; flex-direction: column; gap: 12px; }
+    .change-row { background: #fff; border: 2px solid #e0e0e0; border-radius: 16px; padding: 18px 22px; display: flex; align-items: center; gap: 14px; min-height: 78px; }
+    .change-row .c-label { font-size: 18px; font-weight: 700; color: #555; white-space: nowrap; min-width: 56px; }
+    .change-row .c-label.plus  { color: #0a5c32; }
+    .change-row .c-label.minus { color: #b32020; }
+    .change-row .c-label.miss  { color: #b37000; }
+    .change-row .c-amount { width: 110px; border: none; border-bottom: 2px solid #ddd; background: transparent; font-size: 24px; font-weight: 800; text-align: right; outline: none; color: #1a1a1a; padding: 4px 0; flex-shrink: 0; -webkit-appearance: none; }
+    .change-row .c-divider { width: 1px; height: 32px; background: #eee; flex-shrink: 0; }
+    .change-row .c-reason { flex: 1; border: none; background: transparent; font-size: 18px; color: #1a1a1a; outline: none; font-family: inherit; min-width: 0; }
 
     .summary-card { background: #fff; border: 2px solid #e0e0e0; border-radius: 18px; padding: 22px; }
     .summary-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; font-size: 18px; }
@@ -72,7 +72,6 @@
     .fb-desc .hint { color: #bbb; font-size: 14px; }
     textarea.fb { width: 100%; border: 2px solid #eee; border-radius: 12px; padding: 16px 18px; font-size: 18px; font-family: inherit; color: #1a1a1a; background: #fafafa; resize: none; outline: none; min-height: 110px; line-height: 1.7; }
     textarea.fb:focus { border-color: #aaa; background: #fff; }
-
     textarea.memo { width: 100%; border: 2px solid #e0e0e0; border-radius: 16px; padding: 18px 20px; font-size: 18px; font-family: inherit; color: #1a1a1a; background: #fff; resize: none; outline: none; min-height: 110px; line-height: 1.7; }
 
     .submit-btn { width: 100%; padding: 24px; background: #5f52d1; border: none; border-radius: 18px; font-size: 22px; font-weight: 800; color: #fff; cursor: pointer; margin-top: 10px; font-family: inherit; min-height: 76px; -webkit-appearance: none; }
@@ -102,46 +101,65 @@
     </select>
   </div>
 
+  <!-- 동전: 지폐처럼 1행 -->
   <div class="section">
     <div class="section-title">동전 <span class="badge badge-auto">전일 자동</span></div>
-    <div class="coin-grid">
-      <div class="field auto"><label>10원</label><input type="number" id="c10" inputmode="numeric" min="0"></div>
-      <div class="field auto"><label>50원</label><input type="number" id="c50" inputmode="numeric" min="0"></div>
-      <div class="field auto"><label>100원</label><input type="number" id="c100" inputmode="numeric" min="0"></div>
-      <div class="field auto"><label>500원</label><input type="number" id="c500" inputmode="numeric" min="0"></div>
+    <div class="row-list">
+      <div class="row-item auto"><label>10원</label><input type="number" id="c10" inputmode="numeric" min="0"></div>
+      <div class="row-item auto"><label>50원</label><input type="number" id="c50" inputmode="numeric" min="0"></div>
+      <div class="row-item auto"><label>100원</label><input type="number" id="c100" inputmode="numeric" min="0"></div>
+      <div class="row-item auto"><label>500원</label><input type="number" id="c500" inputmode="numeric" min="0"></div>
     </div>
     <p class="prev-info" id="coin-info">전일 동전 데이터 불러오는 중...</p>
   </div>
 
+  <!-- 지폐 -->
   <div class="section">
     <div class="section-title">지폐 <span class="badge badge-manual">직접 입력</span></div>
-    <div class="bill-list">
-      <div class="bill-row"><label>1,000원</label><input type="number" id="b1000" placeholder="0" inputmode="numeric" min="0"></div>
-      <div class="bill-row"><label>5,000원</label><input type="number" id="b5000" placeholder="0" inputmode="numeric" min="0"></div>
-      <div class="bill-row"><label>10,000원</label><input type="number" id="b10000" placeholder="0" inputmode="numeric" min="0"></div>
-      <div class="bill-row"><label>50,000원</label><input type="number" id="b50000" placeholder="0" inputmode="numeric" min="0"></div>
-      <div class="bill-row rare"><label>100,000원</label><input type="number" id="b100000" value="0" inputmode="numeric" min="0"></div>
-      <div class="bill-row rare"><label>1,000,000원</label><input type="number" id="b1000000" value="0" inputmode="numeric" min="0"></div>
+    <div class="row-list">
+      <div class="row-item"><label>1,000원</label><input type="number" id="b1000" placeholder="0" inputmode="numeric" min="0"></div>
+      <div class="row-item"><label>5,000원</label><input type="number" id="b5000" placeholder="0" inputmode="numeric" min="0"></div>
+      <div class="row-item"><label>10,000원</label><input type="number" id="b10000" placeholder="0" inputmode="numeric" min="0"></div>
+      <div class="row-item"><label>50,000원</label><input type="number" id="b50000" placeholder="0" inputmode="numeric" min="0"></div>
+      <div class="row-item rare"><label>100,000원</label><input type="number" id="b100000" value="0" inputmode="numeric" min="0"></div>
+      <div class="row-item rare"><label>1,000,000원</label><input type="number" id="b1000000" value="0" inputmode="numeric" min="0"></div>
     </div>
     <p class="rare-hint">100,000원 · 1,000,000원은 없으면 0 유지</p>
   </div>
 
+  <!-- 증감/누락 내역: 1행 -->
   <div class="section">
-    <div class="section-title">증감 내역</div>
-    <div class="change-grid">
-      <div class="field"><label>증가액 (원)</label><input type="number" id="plus" placeholder="0" inputmode="numeric" min="0"></div>
-      <div class="field"><label>감소액 (원)</label><input type="number" id="minus" placeholder="0" inputmode="numeric" min="0"></div>
-      <div class="field"><label>증가 사유</label><input type="text" id="plus-reason" placeholder="예: 현금결제"></div>
-      <div class="field"><label>감소 사유</label><input type="text" id="minus-reason" placeholder="예: 현금매출"></div>
+    <div class="section-title">증감 · 누락 내역</div>
+    <div class="change-list">
+      <div class="change-row">
+        <span class="c-label plus">증가</span>
+        <input type="number" class="c-amount" id="plus" placeholder="0" inputmode="numeric" min="0">
+        <div class="c-divider"></div>
+        <input type="text" class="c-reason" id="plus-reason" placeholder="사유 입력">
+      </div>
+      <div class="change-row">
+        <span class="c-label minus">감소</span>
+        <input type="number" class="c-amount" id="minus" placeholder="0" inputmode="numeric" min="0">
+        <div class="c-divider"></div>
+        <input type="text" class="c-reason" id="minus-reason" placeholder="사유 입력">
+      </div>
+      <div class="change-row">
+        <span class="c-label miss">누락</span>
+        <input type="number" class="c-amount" id="miss" placeholder="0" inputmode="numeric" min="0">
+        <div class="c-divider"></div>
+        <input type="text" class="c-reason" id="miss-reason" placeholder="사유 입력">
+      </div>
     </div>
   </div>
 
+  <!-- 정산 요약 -->
   <div class="section">
     <div class="section-title">정산 요약</div>
     <div class="summary-card">
       <div class="summary-row"><span class="lbl">전일 잔액</span><span class="val" id="s-prev">—</span></div>
       <div class="summary-row"><span class="lbl">+ 증가액</span><span class="val" id="s-plus">0원</span></div>
       <div class="summary-row"><span class="lbl">− 감소액</span><span class="val" id="s-minus">0원</span></div>
+      <div class="summary-row"><span class="lbl">± 누락액</span><span class="val" id="s-miss">0원</span></div>
       <hr class="summary-divider">
       <div class="summary-row"><span class="lbl">이론 잔액</span><span class="val" id="s-theory">—</span></div>
       <div class="summary-row"><span class="lbl">오늘 실제 합계</span><span class="val" id="s-today">0원</span></div>
@@ -192,9 +210,7 @@
 </div>
 
 <script>
-  // ⚙️ 여기에 앱스크립트 웹앱 URL 입력
   const GAS_URL = 'https://script.google.com/macros/s/AKfycbz8vboBE0VMAWo-GjNwIAm3IJGjW9sjhjf_wBjkz-Xk16BNtSyt1IumKagTwUB_1tDe/exec';
-
   const DAYS = ['일요일','월요일','화요일','수요일','목요일','금요일','토요일'];
   const COIN_VAL = { c10:10, c50:50, c100:100, c500:500 };
   const BILL_VAL = { b1000:1000, b5000:5000, b10000:10000, b50000:50000, b100000:100000, b1000000:1000000 };
@@ -204,7 +220,6 @@
   document.getElementById('today-date').textContent =
     now.getFullYear() + '년 ' + (now.getMonth()+1) + '월 ' + now.getDate() + '일 ' + DAYS[now.getDay()] + ' 마감';
 
-  // 전일 데이터 로드
   async function loadPrevData() {
     try {
       const res = await fetch(GAS_URL + '?action=getPrev');
@@ -237,13 +252,17 @@
   function updateSummary() {
     const plus  = parseInt(document.getElementById('plus').value)  || 0;
     const minus = parseInt(document.getElementById('minus').value) || 0;
+    const miss  = parseInt(document.getElementById('miss').value)  || 0;
     const today = calcTotal();
-    const theory = prevTotal + plus - minus;
+    const theory = prevTotal + plus - minus + miss;
     const diff   = today - theory;
-    document.getElementById('s-plus').textContent   = plus  > 0 ? '+' + fmt(plus)  : '0원';
+
+    document.getElementById('s-plus').textContent   = plus > 0  ? '+' + fmt(plus)  : '0원';
     document.getElementById('s-minus').textContent  = minus > 0 ? '-' + fmt(minus) : '0원';
+    document.getElementById('s-miss').textContent   = miss !== 0 ? (miss > 0 ? '+' : '') + fmt(miss) : '0원';
     document.getElementById('s-theory').textContent = fmt(theory);
     document.getElementById('s-today').textContent  = fmt(today);
+
     const bar = document.getElementById('diff-bar');
     if (diff === 0) {
       bar.className = 'diff-bar diff-ok';
@@ -281,6 +300,8 @@
       plusReason:    document.getElementById('plus-reason').value,
       minusAmount:   parseInt(document.getElementById('minus').value)    || 0,
       minusReason:   document.getElementById('minus-reason').value,
+      missAmount:    parseInt(document.getElementById('miss').value)     || 0,
+      missReason:    document.getElementById('miss-reason').value,
       prevTotal,
       needCoin:      document.getElementById('need-coin').checked,
       needBill:      document.getElementById('need-bill').checked,
