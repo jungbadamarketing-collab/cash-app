@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>현금 마감</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    html, body { width: 100%; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', 'Apple SD Gothic Neo', sans-serif;
+      background: #f2f2f7; color: #1a1a1a;
+      -webkit-text-size-adjust: 100%;
+    }
+    .app { width: 100%; padding: 28px 20px 80px; max-width: 600px; margin: 0 auto; }
+
+    .header { padding-bottom: 22px; border-bottom: 2px solid #ddd; margin-bottom: 36px; }
+    .header h1 { font-size: 34px; font-weight: 800; }
+    .header p  { font-size: 18px; color: #888; margin-top: 8px; }
+
+    .section { margin-bottom: 40px; }
+    .section-title { font-size: 15px; font-weight: 800; color: #555; letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 16px; display: flex; align-items: center; gap: 10px; }
+    .badge { font-size: 12px; padding: 4px 10px; border-radius: 8px; font-weight: 700; }
+    .badge-auto   { background: #d4f5e5; color: #0a5c32; }
+    .badge-manual { background: #dce8ff; color: #1a4db3; }
+    .badge-opt    { background: #e8e8e8; color: #555; }
+
+    select { width: 100%; padding: 20px 18px; border: 2px solid #ddd; border-radius: 16px; font-size: 20px; background: #fff; color: #1a1a1a; outline: none; -webkit-appearance: none; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='10' viewBox='0 0 16 10'%3E%3Cpath fill='%23999' d='M8 10L0 0h16z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 20px center; min-height: 68px; }
+
+    .coin-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .field { background: #fff; border: 2px solid #e0e0e0; border-radius: 16px; padding: 18px 20px; }
+    .field label { font-size: 15px; color: #aaa; display: block; margin-bottom: 10px; font-weight: 700; }
+    .field input { width: 100%; border: none; background: transparent; font-size: 30px; font-weight: 800; color: #1a1a1a; outline: none; min-height: 44px; -webkit-appearance: none; }
+    .field.auto { border-color: #6ecfa0; background: #edfaf3; }
+    .field.auto label { color: #0a5c32; }
+    .field.auto input { color: #0a5c32; }
+    .prev-info { font-size: 14px; color: #888; margin-top: 12px; padding: 12px 16px; background: #f0f0f0; border-radius: 12px; line-height: 1.6; }
+
+    .bill-list { display: flex; flex-direction: column; gap: 12px; }
+    .bill-row { background: #fff; border: 2px solid #e0e0e0; border-radius: 16px; padding: 20px 22px; display: flex; align-items: center; justify-content: space-between; min-height: 78px; }
+    .bill-row label { font-size: 22px; color: #1a1a1a; font-weight: 600; }
+    .bill-row input { width: 130px; border: none; border-bottom: 2px solid #ccc; background: transparent; font-size: 30px; font-weight: 800; text-align: right; outline: none; color: #1a1a1a; padding: 4px 0; -webkit-appearance: none; }
+    .bill-row.rare { opacity: 0.38; }
+    .bill-row.rare:focus-within { opacity: 1; }
+    input::placeholder { color: #d0d0d0; font-weight: 400; }
+    .rare-hint { font-size: 14px; color: #bbb; margin-top: 10px; padding-left: 4px; }
+
+    .change-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .change-grid .field label { font-size: 14px; }
+    .change-grid .field input { font-size: 26px; }
+
+    .summary-card { background: #fff; border: 2px solid #e0e0e0; border-radius: 18px; padding: 22px; }
+    .summary-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; font-size: 18px; }
+    .summary-row .lbl { color: #888; }
+    .summary-row .val { font-weight: 800; font-size: 20px; }
+    .summary-divider { border: none; border-top: 1.5px solid #f0f0f0; margin: 12px 0; }
+    .diff-bar { display: flex; justify-content: space-between; align-items: center; padding: 18px 20px; border-radius: 14px; margin-top: 16px; }
+    .diff-ok  { background: #d4f5e5; }
+    .diff-ok span { color: #0a5c32; font-weight: 800; font-size: 20px; }
+    .diff-err { background: #ffe5e5; }
+    .diff-err span { color: #b32020; font-weight: 800; font-size: 20px; }
+
+    .check-item { display: flex; align-items: center; gap: 18px; padding: 22px 20px; background: #fff; border: 2px solid #e0e0e0; border-radius: 16px; margin-bottom: 12px; cursor: pointer; min-height: 74px; }
+    .check-item input[type=checkbox] { width: 28px; height: 28px; accent-color: #5f52d1; flex-shrink: 0; }
+    .check-item label { font-size: 21px; cursor: pointer; font-weight: 600; }
+
+    .fb-block { background: #fff; border: 2px solid #e0e0e0; border-radius: 18px; padding: 22px; margin-bottom: 14px; }
+    .fb-header { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+    .fb-icon  { font-size: 24px; }
+    .fb-title { font-size: 21px; font-weight: 800; }
+    .fb-desc  { font-size: 15px; color: #999; margin-bottom: 16px; line-height: 1.7; }
+    .fb-desc .hint { color: #bbb; font-size: 14px; }
+    textarea.fb { width: 100%; border: 2px solid #eee; border-radius: 12px; padding: 16px 18px; font-size: 18px; font-family: inherit; color: #1a1a1a; background: #fafafa; resize: none; outline: none; min-height: 110px; line-height: 1.7; }
+    textarea.fb:focus { border-color: #aaa; background: #fff; }
+
+    textarea.memo { width: 100%; border: 2px solid #e0e0e0; border-radius: 16px; padding: 18px 20px; font-size: 18px; font-family: inherit; color: #1a1a1a; background: #fff; resize: none; outline: none; min-height: 110px; line-height: 1.7; }
+
+    .submit-btn { width: 100%; padding: 24px; background: #5f52d1; border: none; border-radius: 18px; font-size: 22px; font-weight: 800; color: #fff; cursor: pointer; margin-top: 10px; font-family: inherit; min-height: 76px; -webkit-appearance: none; }
+    .submit-btn:active { opacity: 0.8; }
+    .submit-btn:disabled { background: #bbb; cursor: not-allowed; }
+
+    .result { text-align: center; padding: 80px 20px; display: none; }
+    .result .icon { font-size: 64px; margin-bottom: 24px; }
+    .result h2 { font-size: 28px; font-weight: 800; margin-bottom: 14px; }
+    .result p  { font-size: 18px; color: #888; line-height: 1.8; }
+    .result .ok-text  { color: #0a5c32; font-weight: 800; }
+    .result .err-text { color: #b32020; font-weight: 800; }
+  </style>
+</head>
+<body>
+<div class="app" id="form-view">
+  <div class="header">
+    <h1>현금 마감</h1>
+    <p id="today-date"></p>
+  </div>
+
+  <div class="section">
+    <div class="section-title">담당자</div>
+    <select id="manager">
+      <option value="">선택하세요</option>
+      <option>이시원</option><option>정바다</option><option>김다현</option><option>우성현</option>
+    </select>
+  </div>
+
+  <div class="section">
+    <div class="section-title">동전 <span class="badge badge-auto">전일 자동</span></div>
+    <div class="coin-grid">
+      <div class="field auto"><label>10원</label><input type="number" id="c10" inputmode="numeric" min="0"></div>
+      <div class="field auto"><label>50원</label><input type="number" id="c50" inputmode="numeric" min="0"></div>
+      <div class="field auto"><label>100원</label><input type="number" id="c100" inputmode="numeric" min="0"></div>
+      <div class="field auto"><label>500원</label><input type="number" id="c500" inputmode="numeric" min="0"></div>
+    </div>
+    <p class="prev-info" id="coin-info">전일 동전 데이터 불러오는 중...</p>
+  </div>
+
+  <div class="section">
+    <div class="section-title">지폐 <span class="badge badge-manual">직접 입력</span></div>
+    <div class="bill-list">
+      <div class="bill-row"><label>1,000원</label><input type="number" id="b1000" placeholder="0" inputmode="numeric" min="0"></div>
+      <div class="bill-row"><label>5,000원</label><input type="number" id="b5000" placeholder="0" inputmode="numeric" min="0"></div>
+      <div class="bill-row"><label>10,000원</label><input type="number" id="b10000" placeholder="0" inputmode="numeric" min="0"></div>
+      <div class="bill-row"><label>50,000원</label><input type="number" id="b50000" placeholder="0" inputmode="numeric" min="0"></div>
+      <div class="bill-row rare"><label>100,000원</label><input type="number" id="b100000" value="0" inputmode="numeric" min="0"></div>
+      <div class="bill-row rare"><label>1,000,000원</label><input type="number" id="b1000000" value="0" inputmode="numeric" min="0"></div>
+    </div>
+    <p class="rare-hint">100,000원 · 1,000,000원은 없으면 0 유지</p>
+  </div>
+
+  <div class="section">
+    <div class="section-title">증감 내역</div>
+    <div class="change-grid">
+      <div class="field"><label>증가액 (원)</label><input type="number" id="plus" placeholder="0" inputmode="numeric" min="0"></div>
+      <div class="field"><label>감소액 (원)</label><input type="number" id="minus" placeholder="0" inputmode="numeric" min="0"></div>
+      <div class="field"><label>증가 사유</label><input type="text" id="plus-reason" placeholder="예: 현금결제"></div>
+      <div class="field"><label>감소 사유</label><input type="text" id="minus-reason" placeholder="예: 현금매출"></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">정산 요약</div>
+    <div class="summary-card">
+      <div class="summary-row"><span class="lbl">전일 잔액</span><span class="val" id="s-prev">—</span></div>
+      <div class="summary-row"><span class="lbl">+ 증가액</span><span class="val" id="s-plus">0원</span></div>
+      <div class="summary-row"><span class="lbl">− 감소액</span><span class="val" id="s-minus">0원</span></div>
+      <hr class="summary-divider">
+      <div class="summary-row"><span class="lbl">이론 잔액</span><span class="val" id="s-theory">—</span></div>
+      <div class="summary-row"><span class="lbl">오늘 실제 합계</span><span class="val" id="s-today">0원</span></div>
+      <div class="diff-bar diff-ok" id="diff-bar">
+        <span id="diff-label">차이</span><span id="diff-value">계산 중...</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">체크 사항</div>
+    <div class="check-item"><input type="checkbox" id="need-coin"><label for="need-coin">동전 보충 필요</label></div>
+    <div class="check-item"><input type="checkbox" id="need-bill"><label for="need-bill">지폐 보충 필요</label></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">현장 피드백 <span class="badge badge-opt">선택</span></div>
+    <div class="fb-block">
+      <div class="fb-header"><span class="fb-icon">⚡</span><span class="fb-title">운영 효율</span></div>
+      <p class="fb-desc">오늘 업무 중 막히거나 느려진 구간, 반복되는 실수, 개선하면 좋을 동선이나 프로세스<br>
+        <span class="hint">(해결 방식은 같이 의논할 수 있으니 문제점만 적어도 돼요)</span></p>
+      <textarea class="fb" id="fb-efficiency" placeholder="예: 피크타임에 포장 주문이 몰리면 홀 응대가 늦어짐."></textarea>
+    </div>
+    <div class="fb-block">
+      <div class="fb-header"><span class="fb-icon">💬</span><span class="fb-title">고객 반응</span></div>
+      <p class="fb-desc">오늘 손님에게 직접 들은 말, 자주 나온 칭찬이나 불만, 반복되는 요청사항</p>
+      <textarea class="fb" id="fb-customer" placeholder="예: 해물모듬 양이 생각보다 적다는 말 2팀에서 나옴."></textarea>
+    </div>
+    <div class="fb-block">
+      <div class="fb-header"><span class="fb-icon">🔧</span><span class="fb-title">유지 보수</span></div>
+      <p class="fb-desc">시설 고장, 비품 부족, 교체가 필요한 것 등 매장 관리 필요 사항</p>
+      <textarea class="fb" id="fb-maintenance" placeholder="예: 홀 2번 테이블 의자 흔들림 있음. 냉장고 온도가 시원하지 않음."></textarea>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">메모</div>
+    <textarea class="memo" id="memo" placeholder="특이사항을 적어주세요."></textarea>
+  </div>
+
+  <button class="submit-btn" id="submit-btn" onclick="handleSubmit()">마감 제출</button>
+</div>
+
+<div class="app result" id="result-view">
+  <div class="icon" id="result-icon">✅</div>
+  <h2 id="result-title">마감 완료</h2>
+  <p id="result-body"></p>
+</div>
+
+<script>
+  // ⚙️ 여기에 앱스크립트 웹앱 URL 입력
+  const GAS_URL = 'https://script.google.com/macros/s/AKfycbz8vboBE0VMAWo-GjNwIAm3IJGjW9sjhjf_wBjkz-Xk16BNtSyt1IumKagTwUB_1tDe/exec';
+
+  const DAYS = ['일요일','월요일','화요일','수요일','목요일','금요일','토요일'];
+  const COIN_VAL = { c10:10, c50:50, c100:100, c500:500 };
+  const BILL_VAL = { b1000:1000, b5000:5000, b10000:10000, b50000:50000, b100000:100000, b1000000:1000000 };
+  let prevTotal = 0;
+
+  const now = new Date();
+  document.getElementById('today-date').textContent =
+    now.getFullYear() + '년 ' + (now.getMonth()+1) + '월 ' + now.getDate() + '일 ' + DAYS[now.getDay()] + ' 마감';
+
+  // 전일 데이터 로드
+  async function loadPrevData() {
+    try {
+      const res = await fetch(GAS_URL + '?action=getPrev');
+      const prev = await res.json();
+      document.getElementById('c10').value  = prev.c10;
+      document.getElementById('c50').value  = prev.c50;
+      document.getElementById('c100').value = prev.c100;
+      document.getElementById('c500').value = prev.c500;
+      prevTotal = prev.prevTotal;
+      const coinSum = prev.c10*10 + prev.c50*50 + prev.c100*100 + prev.c500*500;
+      document.getElementById('coin-info').textContent =
+        prev.prevDate + ' 동전 합계: ' + coinSum.toLocaleString() + '원 · 변동 있으면 수정하세요';
+      document.getElementById('s-prev').textContent = prevTotal.toLocaleString() + '원';
+      updateSummary();
+    } catch(e) {
+      document.getElementById('coin-info').textContent = '전일 데이터를 불러올 수 없습니다. 직접 입력하세요.';
+    }
+  }
+  loadPrevData();
+
+  function fmt(n) { return Math.round(n).toLocaleString() + '원'; }
+
+  function calcTotal() {
+    let t = 0;
+    Object.entries(COIN_VAL).forEach(([id,v]) => { t += (parseInt(document.getElementById(id).value)||0)*v; });
+    Object.entries(BILL_VAL).forEach(([id,v]) => { t += (parseInt(document.getElementById(id).value)||0)*v; });
+    return t;
+  }
+
+  function updateSummary() {
+    const plus  = parseInt(document.getElementById('plus').value)  || 0;
+    const minus = parseInt(document.getElementById('minus').value) || 0;
+    const today = calcTotal();
+    const theory = prevTotal + plus - minus;
+    const diff   = today - theory;
+    document.getElementById('s-plus').textContent   = plus  > 0 ? '+' + fmt(plus)  : '0원';
+    document.getElementById('s-minus').textContent  = minus > 0 ? '-' + fmt(minus) : '0원';
+    document.getElementById('s-theory').textContent = fmt(theory);
+    document.getElementById('s-today').textContent  = fmt(today);
+    const bar = document.getElementById('diff-bar');
+    if (diff === 0) {
+      bar.className = 'diff-bar diff-ok';
+      document.getElementById('diff-label').textContent = '✓ 정산 일치';
+      document.getElementById('diff-value').textContent = '0원';
+    } else {
+      bar.className = 'diff-bar diff-err';
+      document.getElementById('diff-label').textContent = diff > 0 ? '⚠ 초과' : '⚠ 부족';
+      document.getElementById('diff-value').textContent = (diff > 0 ? '+' : '') + fmt(diff);
+    }
+  }
+
+  document.querySelectorAll('input[type=number], input[type=text]')
+    .forEach(el => el.addEventListener('input', updateSummary));
+
+  async function handleSubmit() {
+    const manager = document.getElementById('manager').value;
+    if (!manager) { alert('담당자를 선택해주세요'); return; }
+    const btn = document.getElementById('submit-btn');
+    btn.disabled = true; btn.textContent = '제출 중...';
+
+    const formData = {
+      manager,
+      c10:           parseInt(document.getElementById('c10').value)      || 0,
+      c50:           parseInt(document.getElementById('c50').value)      || 0,
+      c100:          parseInt(document.getElementById('c100').value)     || 0,
+      c500:          parseInt(document.getElementById('c500').value)     || 0,
+      b1000:         parseInt(document.getElementById('b1000').value)    || 0,
+      b5000:         parseInt(document.getElementById('b5000').value)    || 0,
+      b10000:        parseInt(document.getElementById('b10000').value)   || 0,
+      b50000:        parseInt(document.getElementById('b50000').value)   || 0,
+      b100000:       parseInt(document.getElementById('b100000').value)  || 0,
+      b1000000:      parseInt(document.getElementById('b1000000').value) || 0,
+      plusAmount:    parseInt(document.getElementById('plus').value)     || 0,
+      plusReason:    document.getElementById('plus-reason').value,
+      minusAmount:   parseInt(document.getElementById('minus').value)    || 0,
+      minusReason:   document.getElementById('minus-reason').value,
+      prevTotal,
+      needCoin:      document.getElementById('need-coin').checked,
+      needBill:      document.getElementById('need-bill').checked,
+      fbEfficiency:  document.getElementById('fb-efficiency').value,
+      fbCustomer:    document.getElementById('fb-customer').value,
+      fbMaintenance: document.getElementById('fb-maintenance').value,
+      memo:          document.getElementById('memo').value
+    };
+
+    try {
+      const res = await fetch(GAS_URL + '?action=save', {
+        method: 'POST',
+        body: JSON.stringify(formData)
+      });
+      const result = await res.json();
+      document.getElementById('form-view').style.display = 'none';
+      document.getElementById('result-view').style.display = 'block';
+      if (result.diff === 0) {
+        document.getElementById('result-icon').textContent  = '✅';
+        document.getElementById('result-title').textContent = '마감 완료';
+        document.getElementById('result-body').innerHTML =
+          '정산이 일치합니다.<br><span class="ok-text">실제잔액 ' + result.realTotal.toLocaleString() + '원</span>';
+      } else {
+        document.getElementById('result-icon').textContent  = '⚠️';
+        document.getElementById('result-title').textContent = '마감 완료 (차이 있음)';
+        const sign = result.diff > 0 ? '+' : '';
+        document.getElementById('result-body').innerHTML =
+          '관리자에게 알림이 발송되었습니다.<br><span class="err-text">차이: ' + sign + result.diff.toLocaleString() + '원</span>';
+      }
+    } catch(e) {
+      alert('오류가 발생했습니다: ' + e.message);
+      btn.disabled = false; btn.textContent = '마감 제출';
+    }
+  }
+</script>
+</body>
+</html>
