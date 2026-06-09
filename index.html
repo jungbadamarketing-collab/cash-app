@@ -281,6 +281,30 @@
   async function handleSubmit() {
     const manager = document.getElementById('manager').value;
     if (!manager) { alert('담당자를 선택해주세요'); return; }
+
+    // 정산 불일치 시 누락 내역 필수 입력 체크
+    const plus  = parseInt(document.getElementById('plus').value)  || 0;
+    const minus = parseInt(document.getElementById('minus').value) || 0;
+    const miss  = parseInt(document.getElementById('miss').value)  || 0;
+    const today = calcTotal();
+    const theory = prevTotal + plus - minus + miss;
+    const diff = today - theory;
+
+    if (diff !== 0) {
+      const missAmount = parseInt(document.getElementById('miss').value) || 0;
+      const missReason = document.getElementById('miss-reason').value.trim();
+      if (missAmount === 0) {
+        alert('정산이 ' + Math.abs(diff).toLocaleString() + '원 ' + (diff > 0 ? '초과' : '부족') + ' 상태입니다.\n누락 내역에 금액과 사유를 입력해주세요.');
+        document.getElementById('miss').focus();
+        return;
+      }
+      if (!missReason) {
+        alert('누락 사유를 입력해주세요.');
+        document.getElementById('miss-reason').focus();
+        return;
+      }
+    }
+
     const btn = document.getElementById('submit-btn');
     btn.disabled = true; btn.textContent = '제출 중...';
 
