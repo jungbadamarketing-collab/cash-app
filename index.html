@@ -239,11 +239,11 @@
       // 동전 안내
       const coinSum = prev.c10*10 + prev.c50*50 + prev.c100*100 + prev.c500*500;
       document.getElementById('coin-info').textContent =
-        prev.prevDate + ' 동전 합계: ' + coinSum.toLocaleString() + '원 · 변동 있으면 수정하세요';
+        prev.prevDate + ' 동전 합계: ' + coinSum.toLocaleString() + '원 · 변동 있으면 수정해주세요.';
       // 지폐 안내
       const billSum = (prev.b1000||0)*1000 + (prev.b5000||0)*5000 + (prev.b10000||0)*10000 + (prev.b50000||0)*50000;
       document.getElementById('bill-info').textContent =
-        prev.prevDate + ' 지폐 합계: ' + billSum.toLocaleString() + '원 · 변동 있으면 수정하세요';
+        prev.prevDate + ' 지폐 합계: ' + billSum.toLocaleString() + '원 · 변동 있으면 수정해주세요.';
       document.getElementById('s-prev').textContent = prevTotal.toLocaleString() + '원';
       updateSummary();
     } catch(e) {
