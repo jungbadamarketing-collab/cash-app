@@ -231,10 +231,10 @@
       document.getElementById('c100').value = prev.c100;
       document.getElementById('c500').value = prev.c500;
       // 지폐 (100만원권 제외 — 기본 0 유지)
-      document.getElementById('b1000').value   = prev.b1000   || 0;
-      document.getElementById('b5000').value   = prev.b5000   || 0;
-      document.getElementById('b10000').value  = prev.b10000  || 0;
-      document.getElementById('b50000').value  = prev.b50000  || 0;
+      if (prev.b1000  !== undefined) document.getElementById('b1000').value  = prev.b1000;
+      if (prev.b5000  !== undefined) document.getElementById('b5000').value  = prev.b5000;
+      if (prev.b10000 !== undefined) document.getElementById('b10000').value = prev.b10000;
+      if (prev.b50000 !== undefined) document.getElementById('b50000').value = prev.b50000;
       prevTotal = prev.prevTotal;
       // 동전 안내
       const coinSum = prev.c10*10 + prev.c50*50 + prev.c100*100 + prev.c500*500;
