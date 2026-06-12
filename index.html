@@ -121,11 +121,10 @@
       <div class="row-item auto"><label>5,000원</label><input type="number" id="b5000" inputmode="numeric" min="0"></div>
       <div class="row-item auto"><label>10,000원</label><input type="number" id="b10000" inputmode="numeric" min="0"></div>
       <div class="row-item auto"><label>50,000원</label><input type="number" id="b50000" inputmode="numeric" min="0"></div>
-      <div class="row-item rare"><label>100,000원</label><input type="number" id="b100000" value="0" inputmode="numeric" min="0"></div>
-      <div class="row-item rare"><label>1,000,000원</label><input type="number" id="b1000000" value="0" inputmode="numeric" min="0"></div>
+      <div class="row-item auto"><label>100,000원</label><input type="number" id="b100000" inputmode="numeric" min="0"></div>
+      <div class="row-item auto"><label>1,000,000원</label><input type="number" id="b1000000" inputmode="numeric" min="0"></div>
     </div>
     <p class="prev-info" id="bill-info">전일 지폐 데이터 불러오는 중...</p>
-    <p class="rare-hint">100,000원 · 1,000,000원은 없으면 0 유지</p>
   </div>
 
   <!-- 증감/누락 내역: 1행 -->
@@ -231,19 +230,21 @@
       document.getElementById('c100').value = prev.c100;
       document.getElementById('c500').value = prev.c500;
       // 지폐 (100만원권 제외 — 기본 0 유지)
-      if (prev.b1000  !== undefined) document.getElementById('b1000').value  = prev.b1000;
-      if (prev.b5000  !== undefined) document.getElementById('b5000').value  = prev.b5000;
-      if (prev.b10000 !== undefined) document.getElementById('b10000').value = prev.b10000;
-      if (prev.b50000 !== undefined) document.getElementById('b50000').value = prev.b50000;
+      document.getElementById('b1000').value    = prev.b1000    !== undefined ? prev.b1000    : 0;
+      document.getElementById('b5000').value    = prev.b5000    !== undefined ? prev.b5000    : 0;
+      document.getElementById('b10000').value   = prev.b10000   !== undefined ? prev.b10000   : 0;
+      document.getElementById('b50000').value   = prev.b50000   !== undefined ? prev.b50000   : 0;
+      document.getElementById('b100000').value  = prev.b100000  !== undefined ? prev.b100000  : 0;
+      document.getElementById('b1000000').value = prev.b1000000 !== undefined ? prev.b1000000 : 0;
       prevTotal = prev.prevTotal;
       // 동전 안내
       const coinSum = prev.c10*10 + prev.c50*50 + prev.c100*100 + prev.c500*500;
       document.getElementById('coin-info').textContent =
-        prev.prevDate + ' 동전 합계: ' + coinSum.toLocaleString() + '원 · 변동 있으면 수정해주세요.';
+        prev.prevDate + ' 동전 합계: ' + coinSum.toLocaleString() + '원 · 변동 있으면 수정하세요';
       // 지폐 안내
-      const billSum = (prev.b1000||0)*1000 + (prev.b5000||0)*5000 + (prev.b10000||0)*10000 + (prev.b50000||0)*50000;
+      const billSum = (prev.b1000||0)*1000 + (prev.b5000||0)*5000 + (prev.b10000||0)*10000 + (prev.b50000||0)*50000 + (prev.b100000||0)*100000 + (prev.b1000000||0)*1000000;
       document.getElementById('bill-info').textContent =
-        prev.prevDate + ' 지폐 합계: ' + billSum.toLocaleString() + '원 · 변동 있으면 수정해주세요.';
+        prev.prevDate + ' 지폐 합계: ' + billSum.toLocaleString() + '원 · 변동 있으면 수정하세요';
       document.getElementById('s-prev').textContent = prevTotal.toLocaleString() + '원';
       updateSummary();
     } catch(e) {
